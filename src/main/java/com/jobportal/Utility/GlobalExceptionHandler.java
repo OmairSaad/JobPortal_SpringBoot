@@ -1,22 +1,19 @@
 package com.jobportal.Utility;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,11 +34,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorInfo> badCredentialsException(Exception ex){
-        return new ResponseEntity<ErrorInfo>(new ErrorInfo("Bad Credentials",HttpStatus.BAD_REQUEST.value(),new Date()),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<ErrorInfo>(new ErrorInfo(ex.getMessage(),HttpStatus.BAD_REQUEST.value(),new Date()),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ErrorInfo> usernameNotFoundException(Exception ex){
         return new ResponseEntity<>(new ErrorInfo("User not found",HttpStatus.NOT_FOUND.value(),new Date()),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(JobPortalException.class)
+    public ResponseEntity<ErrorInfo> jobPortalException(Exception ex){
+        return new ResponseEntity<>(new ErrorInfo(ex.getMessage(),HttpStatus.BAD_REQUEST.value(),new Date()),HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorInfo> constraintViolationException(Exception ex){
+        return new ResponseEntity<>(new ErrorInfo(ex.getMessage(),HttpStatus.BAD_REQUEST.value(),new Date()),HttpStatus.BAD_REQUEST);
     }
 }

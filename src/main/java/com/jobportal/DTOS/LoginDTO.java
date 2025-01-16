@@ -9,10 +9,6 @@ public class LoginDTO {
             message = "{user.email.pattern}")
     private String email;
     @NotBlank(message= "{user.password.blank}")
-    @Pattern(
-            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "{user.password.pattern}"
-    )
     private String password;
 
     public String getEmail() {
