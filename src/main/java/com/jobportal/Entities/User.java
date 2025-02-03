@@ -1,9 +1,13 @@
 package com.jobportal.Entities;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobportal.DTOS.LoginDTO;
 import com.jobportal.DTOS.UserDTO;
 import com.jobportal.Utility.ROLE;
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
@@ -16,6 +20,15 @@ public class User {
     @Column (unique = true, nullable = false)
     private String email;
     private ROLE role = ROLE.NORMAL;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"user"})
+    private Profile profile;
+
+    @OneToMany(mappedBy = "user")
+    private List<Job> jobs = new ArrayList<Job>();
+    @OneToMany(mappedBy = "user")
+    private List<Applicant> applicants = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -57,22 +70,40 @@ public class User {
         this.role = role;
     }
 
-    public User(Long id, String name, String password, String email, ROLE role) {
+    public User(Long id, String name, String password, String email, ROLE role, Profile profile, List<Job> jobs) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.email = email;
         this.role = role;
+        this.profile = profile;
+        this.jobs = jobs;
     }
 
     public User() {
     }
 
     public UserDTO toDTO() {
-        return new UserDTO(id, name, password, email, role);
+        return new UserDTO(id, name, password, email, role,profile, jobs);
     }
 
     public LoginDTO toLoginDTO() {
         return new LoginDTO(email,password);
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public List<Job> getJobs() {
+        return jobs;
+    }
+
+    public void setJobs(List<Job> jobs) {
+        this.jobs = jobs;
     }
 }

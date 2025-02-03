@@ -4,6 +4,7 @@ import com.jobportal.DTOS.LoginDTO;
 import com.jobportal.DTOS.UserDTO;
 import com.jobportal.Entities.User;
 import com.jobportal.Repositories.UserRepository;
+import com.jobportal.Services.ProfileService;
 import com.jobportal.Services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +30,24 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProfileService profileService;
+
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@Valid @RequestBody UserDTO userdto) {
         User user = userService.addUser(userdto.toUser());
+        profileService.createProfile(user);
         return new ResponseEntity<>(user.toDTO(), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public LoginDTO login(@Valid @RequestBody LoginDTO logindto) {
+    public UserDTO login(@Valid @RequestBody LoginDTO logindto) {
         User user = userRepository.findByEmail(logindto.getEmail());
         if(user == null) {
             throw new UsernameNotFoundException("Invalid email or password");
         }
         this.doAuthenticate(logindto.getEmail(), logindto.getPassword());
-        return logindto;
+        return user.toDTO();
     }
     private void doAuthenticate(String email, String password) {
         UsernamePasswordAuthenticationToken t = new UsernamePasswordAuthenticationToken(email, password);

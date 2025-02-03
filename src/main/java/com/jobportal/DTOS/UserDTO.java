@@ -1,9 +1,14 @@
 package com.jobportal.DTOS;
 
+import com.jobportal.Entities.Job;
+import com.jobportal.Entities.Profile;
 import com.jobportal.Entities.User;
 import com.jobportal.Utility.ROLE;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDTO {
     private Long id;
@@ -20,6 +25,17 @@ public class UserDTO {
             message = "{user.email.pattern}")
     private String email;
     private ROLE role = ROLE.NORMAL;
+    private Profile profile;
+
+    private List<Job> jobs = new ArrayList<>();
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
 
     public Long getId() {
         return id;
@@ -61,15 +77,26 @@ public class UserDTO {
         this.role = role;
     }
 
-    public UserDTO(Long id, String name, String password, String email, ROLE role) {
+    public List<Job> getJobs() {
+        return jobs;
+    }
+
+    public void setJobs(List<Job> jobs) {
+        this.jobs = jobs;
+    }
+
+    public UserDTO(Long id, String name, String password, String email, ROLE role, Profile profile, List<Job> jobs) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.email = email;
         this.role = role;
+        this.profile = profile;
+        this.jobs = jobs;
     }
     public UserDTO() {}
     public User toUser() {
-        return new User(id, name, password, email, role);
+        return new User(id, name, password, email, role, profile, jobs);
     }
+
 }

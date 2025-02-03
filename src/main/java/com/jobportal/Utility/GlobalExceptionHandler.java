@@ -2,6 +2,7 @@ package com.jobportal.Utility;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorInfo> dataIntegrityViolationException(Exception ex){
-       return new ResponseEntity<>(new ErrorInfo("User already exists",HttpStatus.INTERNAL_SERVER_ERROR.value(),new Date()),HttpStatus.INTERNAL_SERVER_ERROR);
+        String errorMessage = "An error occurred while processing your request.";
+        Throwable cause = ex.getCause();
+        if(cause!=null){
+            errorMessage = cause.getMessage();
+            if(errorMessage.contains("Duplicate entry")){
+                errorMessage="User already exists.";
+            }else if(errorMessage.contains("Data too long for column")){
+                errorMessage = "Data too long for one or more fields.";
+            }else if(errorMessage.contains("foreign constraint fails")){
+                errorMessage = "Invalid reference to another entity.";
+            }
+        }
+        return new ResponseEntity<>(new ErrorInfo(errorMessage,HttpStatus.INTERNAL_SERVER_ERROR.value(),new Date()),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -50,4 +63,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorInfo> constraintViolationException(Exception ex){
         return new ResponseEntity<>(new ErrorInfo(ex.getMessage(),HttpStatus.BAD_REQUEST.value(),new Date()),HttpStatus.BAD_REQUEST);
     }
+
+
 }

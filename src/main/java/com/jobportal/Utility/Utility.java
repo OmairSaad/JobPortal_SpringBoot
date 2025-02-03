@@ -46,7 +46,7 @@ public class Utility {
                     <!-- Button -->
                     <div style="text-align: center; margin-top: 20px;">
                         <a href="http://localhost:5173/" style="display: inline-block; padding: 12px 24px; color: #ffffff; background-color: #6366f1; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold;">Go to Website</a>
-                    </div>
+                    </div> 
                     
                     <!-- Footer -->
                     <div style="margin-top: 30px; text-align: center; color: #9ca3af; font-size: 12px;">
