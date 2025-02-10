@@ -28,9 +28,14 @@ public class Profile {
     @JsonIgnore
     private User user;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-//    private List<Skills> skills = new ArrayList<>();
-      private List<ProfileSkill> skills = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "profile-skills",
+            joinColumns = @JoinColumn(name = "profile-id"),
+            inverseJoinColumns = @JoinColumn(name = "skill-id")
+    )
+    private List<Skills> skills = new ArrayList<>();
+
     @OneToMany(mappedBy = "profile",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Exprience> expriences = new ArrayList<>();
 
@@ -78,14 +83,22 @@ public class Profile {
         this.company = company;
     }
 
-    public List<ProfileSkill> getSkills() {
+//    public List<ProfileSkill> getSkills() {
+//        return skills;
+//    }
+//
+//    public void setSkills(List<ProfileSkill> skills) {
+//        this.skills = skills;
+//    }
+
+
+    public List<Skills> getSkills() {
         return skills;
     }
 
-    public void setSkills(List<ProfileSkill> skills) {
+    public void setSkills(List<Skills> skills) {
         this.skills = skills;
     }
-
 
     public Long getId() {
         return id;
@@ -135,7 +148,7 @@ public class Profile {
         this.certifications = certifications;
     }
 
-    public Profile(Long id, String email, String name, String role, String location, String about, byte[] picture, String company, User user, List<ProfileSkill> skills, List<Exprience> expriences, List<Certifications> certifications) {
+    public Profile(Long id, String email, String name, String role, String location, String about, byte[] picture, String company, User user, List<Skills> skills, List<Exprience> expriences, List<Certifications> certifications) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -153,6 +166,6 @@ public class Profile {
     public Profile() {}
 
     public ProfileDTO toDTO(){
-        return new ProfileDTO(id,email,name,role,location,about, this.picture!=null? Base64.getEncoder().encodeToString(this.picture):null,company,user,skills,expriences,certifications);
+        return new ProfileDTO(id,email,name,role,location,about, this.picture!=null? Base64.getEncoder().encodeToString(this.picture):null,company,user,skills,expriences,certifications,null);
     }
 }

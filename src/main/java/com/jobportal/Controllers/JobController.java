@@ -25,13 +25,30 @@ public class JobController {
         return jobService.getAllJobs();
     }
 
+    @GetMapping("/getAll/{userId}")
+    public List<JobDTO> getAllJobsWithSaved(@PathVariable Long userId) {
+        return jobService.getAllJobsWithSaved(userId);
+    }
     @GetMapping("/user/{userId}")
     public List<JobDTO> getJobsByUserId(@PathVariable Long userId) {
         return jobService.getAllJobsByUser(userId);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<JobDTO> getJobById(@PathVariable Long id) {
-        return jobService.getJobById(id);
+    //get job by id but user for check it is applied or not or saved or not
+    @GetMapping("/{id}/user/{userId}")
+    public ResponseEntity<JobDTO> getJobById(@PathVariable Long id, @PathVariable Long userId) {
+        return jobService.getJobById(id,userId);
     }
+
+    @PostMapping("/{jobId}/user/{userId}/toggle-save")
+    public ResponseEntity<String> toggleSaveJob(@PathVariable Long jobId, @PathVariable Long userId) {
+        return jobService.toggleSaveJob(jobId,userId);
+    }
+
+    @GetMapping("/saved/{userId}")
+    public List<JobDTO> getSavedJobs(@PathVariable Long userId) {
+        return jobService.getAllSavedJobs(userId);
+    }
+
+
 }

@@ -11,18 +11,18 @@ import java.util.List;
 public class SkillsDTO {
     private Long id;
     private String skillName;
-    @JsonIgnore
-    private Profile profile;
     private List<Job> jobs = new ArrayList<Job>();
-    public SkillsDTO(Long id, String skillName, Profile profile, List<Job> jobs) {
+    private List<Profile> profiles= new ArrayList<>();
+
+    public SkillsDTO(Long id, String skillName, List<Job> jobs, List<Profile> profiles) {
         this.id = id;
         this.skillName = skillName;
-        this.profile = profile;
         this.jobs = jobs;
+        this.profiles = profiles;
     }
 
     public Skills toSkills() {
-        return new Skills(id,skillName,profile, jobs);
+        return new Skills(id,skillName, jobs, profiles);
     }
 
     public Long getId() {
@@ -41,20 +41,20 @@ public class SkillsDTO {
         this.skillName = skillName;
     }
 
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
-
     public List<Job> getJobs() {
         return jobs;
     }
 
     public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
+    }
+
+    public List<Profile> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(List<Profile> profiles) {
+        this.profiles = profiles;
     }
 
     public SkillsDTO() {

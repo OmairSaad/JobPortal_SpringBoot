@@ -15,9 +15,6 @@ public class Skills {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String skillName;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Profile profile;
 
     @ManyToMany(mappedBy = "skills")
     @JsonIgnore
@@ -25,6 +22,10 @@ public class Skills {
     public Long getId() {
         return id;
     }
+
+    @ManyToMany(mappedBy = "skills")
+    @JsonIgnore
+    private List<Profile> profiles= new ArrayList<>();
 
     public void setId(Long id) {
         this.id = id;
@@ -38,13 +39,6 @@ public class Skills {
         this.skillName = skillName;
     }
 
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
 
     public List<Job> getJobs() {
         return jobs;
@@ -54,16 +48,24 @@ public class Skills {
         this.jobs = jobs;
     }
 
-    public Skills(Long id, String skillName, Profile profile, List<Job> jobs) {
+    public List<Profile> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(List<Profile> profiles) {
+        this.profiles = profiles;
+    }
+
+    public Skills(Long id, String skillName, List<Job> jobs, List<Profile> profiles) {
         this.id = id;
         this.skillName = skillName;
-        this.profile = profile;
         this.jobs = jobs;
+        this.profiles = profiles;
     }
     public Skills() {}
 
     public SkillsDTO toDTO() {
-        return new SkillsDTO(id, skillName, profile,jobs);
+        return new SkillsDTO(id, skillName,jobs,profiles);
     }
 
 }

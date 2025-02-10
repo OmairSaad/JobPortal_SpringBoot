@@ -5,6 +5,8 @@ import com.jobportal.Entities.Applicant;
 import com.jobportal.Entities.Job;
 import com.jobportal.Entities.Skills;
 import com.jobportal.Entities.User;
+import com.jobportal.Utility.ApplicationStatus;
+import com.jobportal.Utility.JobStatus;
 
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ public class JobDTO {
     private String experience;
     private String location;
     private String jobType;
+    private JobStatus jobStatus;
     private Long salary;
     private LocalDateTime postedAgo;
     private String about;
@@ -26,6 +29,17 @@ public class JobDTO {
     private User user;
     private List<Skills> skills = new ArrayList<>();
     private List<Applicant> applicants = new ArrayList<>();
+    @JsonIgnore
+    private List<User> users = new ArrayList<>();
+
+    //save
+    private Boolean isSaved= false;
+
+    //for application status of job
+    private ApplicationStatus applicationStatus;
+
+    //for timestamp applicant
+    private LocalDateTime applicantTimestamp;
 
     public Long getId() {
         return id;
@@ -131,7 +145,47 @@ public class JobDTO {
         this.applicants = applicants;
     }
 
-    public JobDTO(Long id, String jobTitle, String company, String experience, String location, String jobType, Long salary, LocalDateTime postedAgo, String about, String jobDescription, User user, List<Skills> skills, List<Applicant> applicants) {
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public ApplicationStatus getApplicationStatus() {
+        return applicationStatus;
+    }
+
+    public void setApplicationStatus(ApplicationStatus applicationStatus) {
+        this.applicationStatus = applicationStatus;
+    }
+
+    public Boolean getSaved() {
+        return isSaved;
+    }
+
+    public void setSaved(Boolean saved) {
+        isSaved = saved;
+    }
+
+    public LocalDateTime getApplicantTimestamp() {
+        return applicantTimestamp;
+    }
+
+    public void setApplicantTimestamp(LocalDateTime applicantTimestamp) {
+        this.applicantTimestamp = applicantTimestamp;
+    }
+
+    public JobStatus getJobStatus() {
+        return jobStatus;
+    }
+
+    public void setJobStatus(JobStatus jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+
+    public JobDTO(Long id, String jobTitle, String company, String experience, String location, String jobType, Long salary, LocalDateTime postedAgo, String about, String jobDescription, User user, List<Skills> skills, List<Applicant> applicants, List<User> users, Boolean isSaved, ApplicationStatus applicationStatus, LocalDateTime applicantTimestamp,JobStatus jobStatus) {
         this.id = id;
         this.jobTitle = jobTitle;
         this.company = company;
@@ -145,8 +199,13 @@ public class JobDTO {
         this.user = user;
         this.skills = skills;
         this.applicants = applicants;
+        this.users = users;
+        this.isSaved = isSaved;
+        this.applicationStatus = applicationStatus;
+        this.applicantTimestamp = applicantTimestamp;
+        this.jobStatus = jobStatus;
     }
     public Job toJob() {
-        return new Job(id,jobTitle,company,experience,location,jobType,salary, postedAgo, about,jobDescription,user,skills,applicants);
+        return new Job(id,jobTitle,company,experience,location,jobType,salary, postedAgo, about,jobDescription,user,skills,applicants,users,jobStatus);
     }
 }

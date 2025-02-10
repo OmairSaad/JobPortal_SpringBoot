@@ -15,6 +15,5 @@ import java.util.Optional;
 
 @Repository
 public interface SkillsRepository extends JpaRepository<Skills, Long> {
-    List<Skills> getSkillsByProfile(Profile profile);
     Optional<Skills> findBySkillName(String name);
 }

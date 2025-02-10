@@ -1,18 +1,17 @@
-package com.jobportal.Entities;
+package com.jobportal.DTOS;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.jobportal.DTOS.ApplicantDTO;
+import com.jobportal.Entities.Applicant;
+import com.jobportal.Entities.Job;
+import com.jobportal.Entities.User;
 import com.jobportal.Utility.ApplicationStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
 
-@Entity
-public class Applicant {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ApplicantDTO {
     private  Long applicantId;
     private LocalDateTime timestamp;
     private ApplicationStatus applicationStatus;
@@ -23,14 +22,13 @@ public class Applicant {
     private String phone;
     private String website;
     private String cover;
-    @Lob
-    private byte[] resume;
-    @ManyToOne()
+    private String resume;
     @JsonIgnore
     private Job job;
-    @ManyToOne()
     @JsonIgnore
     private User user;
+
+    private ProfileDTO profile;
 
     public Long getApplicantId() {
         return applicantId;
@@ -96,11 +94,11 @@ public class Applicant {
         this.cover = cover;
     }
 
-    public byte[] getResume() {
+    public String getResume() {
         return resume;
     }
 
-    public void setResume(byte[] resume) {
+    public void setResume(String resume) {
         this.resume = resume;
     }
 
@@ -120,6 +118,14 @@ public class Applicant {
         this.user = user;
     }
 
+    public ProfileDTO getProfile() {
+        return profile;
+    }
+
+    public void setProfile(ProfileDTO profile) {
+        this.profile = profile;
+    }
+
     public LocalDateTime getInterviewDate() {
         return interviewDate;
     }
@@ -136,7 +142,7 @@ public class Applicant {
         this.interviewTime = interviewTime;
     }
 
-    public Applicant(Long applicantId, LocalDateTime timestamp, ApplicationStatus applicationStatus, String name, String email, String phone, String website, String cover, byte[] resume, Job job, User user, LocalDateTime interviewDate, String interviewTime) {
+    public ApplicantDTO(Long applicantId, LocalDateTime timestamp, ApplicationStatus applicationStatus, String name, String email, String phone, String website, String cover, String resume, Job job, User user, ProfileDTO profile, LocalDateTime interviewDate, String interviewTime) {
         this.applicantId = applicantId;
         this.timestamp = timestamp;
         this.applicationStatus = applicationStatus;
@@ -148,12 +154,12 @@ public class Applicant {
         this.resume = resume;
         this.job = job;
         this.user = user;
+        this.profile = profile;
         this.interviewDate = interviewDate;
         this.interviewTime = interviewTime;
     }
-    public Applicant() {}
 
-    public ApplicantDTO toDTO(){
-        return new ApplicantDTO(applicantId,timestamp,applicationStatus,name,email,phone,website,cover,resume!=null? Base64.getEncoder().encodeToString(resume):null,job,user, user!=null? user.getProfile().toDTO() : null, interviewDate, interviewTime);
+    public Applicant toApplicant(){
+        return new Applicant(applicantId,timestamp,applicationStatus,name,email,phone,website,cover,resume!=null ? Base64.getDecoder().decode(resume):null,job,user, interviewDate,interviewTime);
     }
 }

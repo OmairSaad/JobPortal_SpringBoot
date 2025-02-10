@@ -17,4 +17,5 @@ public interface ProfileService {
     public ProfileDTO updateProfileInfo(Long userId,ProfileDTO profile);
     Profile updateProfileAbout(Long userId, ProfileDTO profile);
     ResponseEntity<String> updatePicture(Long userId, ProfileDTO profile);
+    ProfileDTO getProfileById(Long profileId);
 }

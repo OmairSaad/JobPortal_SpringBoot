@@ -41,4 +41,9 @@ public class ProfileController {
     private ResponseEntity<String> updateProfilePicture(@PathVariable Long userId, @RequestBody ProfileDTO profile) {
         return profileService.updatePicture(userId,profile);
     }
+
+    @GetMapping("/getById/{profileId}")
+    private ProfileDTO getProfileById(@PathVariable Long profileId) {
+        return profileService.getProfileById(profileId);
+    }
 }

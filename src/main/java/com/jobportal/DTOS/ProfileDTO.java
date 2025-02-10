@@ -3,6 +3,7 @@ package com.jobportal.DTOS;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobportal.Entities.*;
+import com.jobportal.Utility.ApplicationStatus;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -21,9 +22,14 @@ public class ProfileDTO {
     private String picture;
     @JsonIgnore
     private User user;
-    private List<ProfileSkill> skills = new ArrayList<>();
+//    private List<ProfileSkill> skills = new ArrayList<>();
+    private List<Skills> skills = new ArrayList<>();
+
     private List<Exprience> expriences = new ArrayList<>();
     private List<Certifications> certifications = new ArrayList<>();
+
+    //application status for showing on profile in applicants interviewed or not
+    private ApplicationStatus applicationStatus;
 
     public Long getId() {
         return id;
@@ -97,11 +103,12 @@ public class ProfileDTO {
         this.user = user;
     }
 
-    public List<ProfileSkill> getSkills() {
+
+    public List<Skills> getSkills() {
         return skills;
     }
 
-    public void setSkills(List<ProfileSkill> skills) {
+    public void setSkills(List<Skills> skills) {
         this.skills = skills;
     }
 
@@ -121,7 +128,15 @@ public class ProfileDTO {
         this.certifications = certifications;
     }
 
-    public ProfileDTO(Long id,String email, String name, String role, String location, String about, String picture, String company, User user, List<ProfileSkill> skills, List<Exprience> expriences, List<Certifications> certifications) {
+    public ApplicationStatus getApplicationStatus() {
+        return applicationStatus;
+    }
+
+    public void setApplicationStatus(ApplicationStatus applicationStatus) {
+        this.applicationStatus = applicationStatus;
+    }
+
+    public ProfileDTO(Long id, String email, String name, String role, String location, String about, String picture, String company, User user, List<Skills> skills, List<Exprience> expriences, List<Certifications> certifications, ApplicationStatus applicationStatus) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -134,6 +149,7 @@ public class ProfileDTO {
         this.skills = skills;
         this.expriences = expriences;
         this.certifications = certifications;
+        this.applicationStatus = applicationStatus;
     }
     public ProfileDTO() {}
     public Profile toProfile(){

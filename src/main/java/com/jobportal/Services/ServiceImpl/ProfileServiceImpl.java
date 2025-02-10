@@ -67,4 +67,10 @@ public class ProfileServiceImpl implements ProfileService {
         profileRepository.save(pr);
         return ResponseEntity.ok("Profile Updated");
     }
+
+
+    @Override
+    public ProfileDTO getProfileById(Long profileId) {
+        return profileRepository.findById(profileId).orElseThrow(()->new JobPortalException("Profile not found!")).toDTO();
+    }
 }

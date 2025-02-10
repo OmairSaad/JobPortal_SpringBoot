@@ -3,6 +3,7 @@ package com.jobportal.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jobportal.DTOS.JobDTO;
+import com.jobportal.Utility.JobStatus;
 import jakarta.persistence.*;
 import lombok.ToString;
 
@@ -20,6 +21,7 @@ public class Job {
     private String experience;
     private String location;
     private String jobType;
+    private JobStatus jobStatus;
     private Long salary;
     private LocalDateTime postedAgo;
     @Column(length = 10000)
@@ -35,10 +37,17 @@ public class Job {
             joinColumns = @JoinColumn(name = "job-id"),
             inverseJoinColumns = @JoinColumn(name = "skill-id")
     )
+
     private List<Skills> skills = new ArrayList<>();
 
     @OneToMany(mappedBy = "job")
     private List<Applicant> applicants = new ArrayList<>();
+
+
+    //save jobs
+    @ManyToMany(mappedBy = "savedJobs")
+    @JsonIgnore
+    private List<User> users = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -144,7 +153,23 @@ public class Job {
         this.applicants = applicants;
     }
 
-    public Job(Long id, String jobTitle, String company, String experience, String location, String jobType, Long salary, LocalDateTime postedAgo, String about , String jobDescription, User user, List<Skills> skills, List<Applicant> applicants) {
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public JobStatus getJobStatus() {
+        return jobStatus;
+    }
+
+    public void setJobStatus(JobStatus jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+
+    public Job(Long id, String jobTitle, String company, String experience, String location, String jobType, Long salary, LocalDateTime postedAgo, String about , String jobDescription, User user, List<Skills> skills, List<Applicant> applicants, List<User> users, JobStatus jobStatus) {
         this.id = id;
         this.jobTitle = jobTitle;
         this.company = company;
@@ -158,10 +183,12 @@ public class Job {
         this.user = user;
         this.skills = skills;
         this.applicants = applicants;
+        this.users = users;
+        this.jobStatus = jobStatus;
     }
     public Job() {}
 
     public JobDTO toDTO(){
-        return new JobDTO(id,jobTitle,company,experience, location,jobType,salary, postedAgo, about,jobDescription,user,skills,applicants);
+        return new JobDTO(id,jobTitle,company,experience, location,jobType,salary, postedAgo, about,jobDescription,user,skills,applicants,users,false,null,null,jobStatus);
     }
 }

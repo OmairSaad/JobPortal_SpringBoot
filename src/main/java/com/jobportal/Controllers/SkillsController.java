@@ -1,6 +1,7 @@
 package com.jobportal.Controllers;
 
 
+import com.jobportal.DTOS.ProfileDTO;
 import com.jobportal.DTOS.ProfileSkillDTO;
 import com.jobportal.DTOS.SkillsDTO;
 import com.jobportal.Entities.Profile;
@@ -33,7 +34,7 @@ public class SkillsController {
         return skillsService.getAllSkills();
     }
     @PostMapping("/{id}")
-    public List<ProfileSkillDTO> addSkills(@RequestBody List<ProfileSkillDTO> skills, @PathVariable Long id) {
+    public ProfileDTO addSkills(@RequestBody List<SkillsDTO> skills, @PathVariable Long id) {
         return skillsService.createSkills(skills,id);
     }
 }

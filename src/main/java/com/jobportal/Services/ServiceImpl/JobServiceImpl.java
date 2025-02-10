@@ -1,6 +1,7 @@
 package com.jobportal.Services.ServiceImpl;
 
 import com.jobportal.DTOS.JobDTO;
+import com.jobportal.Entities.Applicant;
 import com.jobportal.Entities.Job;
 import com.jobportal.Entities.Skills;
 import com.jobportal.Entities.User;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JobServiceImpl implements JobService {
@@ -70,7 +72,64 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public ResponseEntity<JobDTO> getJobById(Long id) {
-        return new ResponseEntity<>(jobRepository.findById(id).orElseThrow(()->new JobPortalException("Job not found!")).toDTO(), HttpStatus.OK);
+    public ResponseEntity<JobDTO> getJobById(Long id,Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new JobPortalException("User not found"));
+        Job job = jobRepository.findById(id).orElseThrow(()-> new JobPortalException("Job not found"));
+        List<Applicant> applicants = user.getApplicants();
+        JobDTO jd = job.toDTO();
+        if(user.getSavedJobs().contains(job)){
+            jd.setSaved(true);
+        }
+        Optional<Applicant> appOp = applicants.stream().filter((ap)-> ap.getJob().equals(job)).findFirst();
+        if(appOp.isPresent()) {
+            jd.setApplicationStatus(appOp.get().getApplicationStatus());
+            jd.setApplicantTimestamp(appOp.get().getTimestamp());
+        }
+        return new ResponseEntity<>(jd, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<String> toggleSaveJob(Long jobId,Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new JobPortalException("User not found id"));
+        Job job= jobRepository.findById(jobId).orElseThrow(()->new JobPortalException("Job not found"));
+        if(user.getSavedJobs().contains(job)) {
+            //unsaved
+            user.getSavedJobs().remove(job);
+            userRepository.save(user);
+            return new ResponseEntity<>("Job Unsaved", HttpStatus.OK);
+        }else{
+            user.getSavedJobs().add(job);
+            userRepository.save(user);
+            return new ResponseEntity<>("Job Saved", HttpStatus.OK);
+        }
+    }
+
+    @Override
+    public List<JobDTO> getAllSavedJobs(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new JobPortalException("User not found"));
+        return user.getSavedJobs().stream().map(Job::toDTO).toList();
+    }
+
+    @Override
+    public List<JobDTO> getAllJobsWithSaved(Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(()-> new JobPortalException("User not found"));
+        List<Job> jobs = jobRepository.findAll();
+        List<Job> savedJobs = user.getSavedJobs();
+        List<Applicant> applicants = user.getApplicants();
+        List<JobDTO> jobDTOs = new ArrayList<>();
+        for (Job job: jobs) {
+            JobDTO jd = job.toDTO();
+            if(savedJobs.contains(job)) {
+                jd.setSaved(true);
+            }
+            Optional<Applicant> appOp = applicants.stream().filter((ap)-> ap.getJob().equals(job)).findFirst();
+            if(appOp.isPresent()) {
+                jd.setApplicationStatus(appOp.get().getApplicationStatus());
+                jd.setApplicantTimestamp(appOp.get().getTimestamp());
+            }
+            jobDTOs.add(jd);
+        }
+        return jobDTOs;
     }
 }

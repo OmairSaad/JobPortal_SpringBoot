@@ -30,6 +30,15 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Applicant> applicants = new ArrayList<>();
 
+    //for save jobs
+    @ManyToMany
+    @JoinTable(
+            name = "saved-jobs",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "job-id")
+    )
+    private List<Job> savedJobs = new ArrayList<>();
+
     public Long getId() {
         return id;
     }
@@ -70,7 +79,23 @@ public class User {
         this.role = role;
     }
 
-    public User(Long id, String name, String password, String email, ROLE role, Profile profile, List<Job> jobs) {
+    public List<Applicant> getApplicants() {
+        return applicants;
+    }
+
+    public void setApplicants(List<Applicant> applicants) {
+        this.applicants = applicants;
+    }
+
+    public List<Job> getSavedJobs() {
+        return savedJobs;
+    }
+
+    public void setSavedJobs(List<Job> savedJobs) {
+        this.savedJobs = savedJobs;
+    }
+
+    public User(Long id, String name, String password, String email, ROLE role, Profile profile, List<Job> jobs, List<Applicant> applicants, List<Job> savedJobs) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -78,13 +103,15 @@ public class User {
         this.role = role;
         this.profile = profile;
         this.jobs = jobs;
+        this.applicants = applicants;
+        this.savedJobs = savedJobs;
     }
 
     public User() {
     }
 
     public UserDTO toDTO() {
-        return new UserDTO(id, name, password, email, role,profile, jobs);
+        return new UserDTO(id, name, password, email, role,profile, jobs, applicants, savedJobs);
     }
 
     public LoginDTO toLoginDTO() {

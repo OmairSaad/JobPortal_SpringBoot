@@ -1,10 +1,12 @@
 package com.jobportal.Services.ServiceImpl;
 
+import com.jobportal.DTOS.ProfileDTO;
 import com.jobportal.DTOS.ProfileSkillDTO;
 import com.jobportal.DTOS.SkillsDTO;
 import com.jobportal.Entities.Profile;
 import com.jobportal.Entities.ProfileSkill;
 import com.jobportal.Entities.Skills;
+import com.jobportal.Entities.User;
 import com.jobportal.Repositories.ProfileRepository;
 import com.jobportal.Repositories.ProfileSkillRepository;
 import com.jobportal.Repositories.SkillsRepository;
@@ -13,6 +15,7 @@ import com.jobportal.Utility.JobPortalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,16 +30,30 @@ public class SkillsServiceImpl implements SkillsService {
     @Autowired
     private ProfileSkillRepository profileSkillRepository;
 
-    public List<ProfileSkillDTO> createSkills(List<ProfileSkillDTO> skills, Long id) {
+    public ProfileDTO createSkills(List<SkillsDTO> skills, Long id) {
         Profile profile = profileRepository.findById(id).orElseThrow(()-> new JobPortalException("Profile not found"));
-        List<ProfileSkill> skillsList = new ArrayList<>();
-        for (ProfileSkillDTO skill : skills) {
-             skill.setProfile(profile);
-             skillsList.add(skill.toProfileSkill());
+
+        profile.getSkills().clear();
+        profileRepository.save(profile); // Ensure old relationships are removed
+
+        // Initialize skills list
+        List<Skills> profileSkills = new ArrayList<>();
+
+        // Process the list of skills from DTOs
+        for (SkillsDTO sk : skills) {
+            Skills skill = skillsRepository.findBySkillName(sk.getSkillName())
+                    .orElseGet(() -> {
+                        // If skill does not exist, create a new skill entity
+                        Skills newSkill = new Skills();
+                        newSkill.setSkillName(sk.getSkillName());
+                        return skillsRepository.save(newSkill);
+                    });
+
+            // Add skill to the job's skills list
+            profileSkills.add(skill);
         }
-        List<ProfileSkill> sk =profileSkillRepository.getSkillsByProfile(profile);
-        profileSkillRepository.deleteAll(sk);
-        return profileSkillRepository.saveAll(skillsList).stream().map((ProfileSkill::toDTO)).collect(Collectors.toList());
+        profile.setSkills(profileSkills);
+       return profileRepository.save(profile).toDTO();
     }
 
     @Override
